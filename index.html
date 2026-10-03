@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS Centro Estratégico & Fitness Pro</title>
+  <style>
+    :root {
+      --bg: #070a12;
+      --card: #111827;
+      --card-sub: #162032;
+      --accent: #00f2fe;
+      --accent-glow: rgba(0, 242, 254, 0.25);
+      --gold: #fbbf24;
+      --success: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --running: #f59e0b;
+      --music: #a855f7;
+      --taichi: #2dd4bf;
+      --text: #f8fafc;
+      --sub: #94a3b8;
+      --border: #1f293d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 90px; }
+    
+    /* CABECERA */
+    header { background: #050810; padding: 12px 16px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; }
+    .header-top h1 { font-size: 1.05rem; color: var(--accent); font-weight: 800; letter-spacing: 1px; text-shadow: 0 0 10px var(--accent-glow); }
+    .voice-config { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--sub); margin-top: 6px; }
+    .badge { background: #1e293b; padding: 3px 8px; border-radius: 10px; font-size: 0.72rem; border: 1px solid var(--border); color: #cbd5e1; }
+    
+    /* BARRA DE NAVEGACIÓN SUPERIOR */
+    .tabs-nav { display: flex; background: #0c111d; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+    .tab-item { flex: 1; min-width: 78px; padding: 12px 4px; border: none; background: none; color: var(--sub); font-size: 0.76rem; font-weight: 700; cursor: pointer; text-align: center; border-bottom: 2px solid transparent; white-space: nowrap; }
+    .tab-item.active { color: var(--accent); border-color: var(--accent); background: rgba(0, 242, 254, 0.08); }
+
+    .container { padding: 14px; max-width: 600px; margin: 0 auto; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* TARJETAS */
+    .card { background: var(--card); border-radius: 12px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); }
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .card-title { font-size: 0.92rem; font-weight: 700; color: #fff; }
+
+    /* REPRODUCTOR MP3 */
+    .music-panel { background: #0f0c1b; border: 1px solid var(--music); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; }
+    .music-header { display: flex; justify-content: space-between; align-items: center; }
+    .music-title { font-size: 0.78rem; font-weight: 700; color: var(--music); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+    .music-controls { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .btn-music { background: #1c172e; border: 1px solid var(--music); color: #fff; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: 700; }
+    .load-mp3-label { background: var(--music); color: #000; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; }
+    #mp3-input { display: none; }
+
+    /* BOTONES */
+    .btn-main { background: var(--accent); color: #000; border: none; padding: 9px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-secondary { background: #1e293b; color: #fff; border: 1px solid var(--border); padding: 9px 11px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.8rem; }
+    .speed-select, .voice-select, .input-dark { background: #090e17; color: var(--text); border: 1px solid var(--border); padding: 6px; border-radius: 6px; font-size: 0.75rem; }
+
+    /* GESTIÓN GIMNASIO & BIOMECÁNICA */
+    .jarvis-scanner-btn { width: 100%; background: linear-gradient(135deg, #00c6ff, #0072ff); color: #fff; border: none; padding: 11px; border-radius: 10px; font-size: 0.86rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin-bottom: 12px; }
+    #camera-input { display: none; }
+    
+    .gym-tabs { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; }
+    .gym-tab-btn { flex: 1; padding: 8px 4px; background: var(--card-sub); border: 1px solid var(--border); color: var(--sub); border-radius: 8px; font-weight: 700; font-size: 0.72rem; cursor: pointer; text-align: center; white-space: nowrap; }
+    .gym-tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+    .gym-day-content { display: none; }
+    .gym-day-content.active { display: block; }
+
+    .gym-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; transition: all 0.2s; }
+    .gym-card.done { border-color: var(--success); opacity: 0.55; background: #081119; }
+    .gym-card.done .gym-title { text-decoration: line-through; }
+    .gym-card-top { display: flex; align-items: flex-start; gap: 10px; }
+    .gym-card input[type="checkbox"] { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--success); cursor: pointer; flex-shrink: 0; }
+    .gym-title { font-weight: 700; font-size: 0.92rem; color: #fff; }
+    .gym-desc { font-size: 0.76rem; color: var(--sub); margin-top: 2px; }
+
+    .dual-movement-box { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .phase-wrap { background: #000; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+    .phase-label { width: 100%; background: #1a2333; font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-align: center; padding: 3px 0; letter-spacing: 0.5px; }
+    .phase-wrap img { width: 100%; height: 135px; object-fit: cover; background-color: #ffffff; display: block; }
+    .biomech { margin-top: 8px; font-size: 0.74rem; color: #38bdf8; background: rgba(56, 189, 248, 0.08); padding: 6px 10px; border-radius: 6px; border-left: 3px solid #38bdf8; line-height: 1.35; }
+
+    /* CRONÓMETRO DE DESCANSO */
+    .timer-panel { background: var(--card-sub); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .timer-display { font-size: 1.4rem; font-weight: 800; color: var(--accent); font-family: monospace; }
+
+    /* RUNNING COACH */
+    .coach-screen { background: #060911; border: 2px solid var(--running); border-radius: 10px; padding: 14px; text-align: center; margin-top: 8px; }
+    .coach-phase { font-size: 0.8rem; font-weight: 800; color: var(--running); text-transform: uppercase; letter-spacing: 1.5px; }
+    .coach-time { font-size: 2.6rem; font-weight: 900; color: #fff; margin: 4px 0; font-family: monospace; }
+    .coach-inst { font-size: 0.86rem; color: #e2e8f0; min-height: 38px; display: flex; align-items: center; justify-content: center; }
+    .btn-coach-start { background: var(--running); color: #000; }
+    .btn-coach-stop { background: var(--red); color: #fff; }
+
+    /* BARRA PROGRESO BÍBLIA */
+    .progress-track { width: 100%; height: 8px; background: #090e17; border-radius: 4px; overflow: hidden; margin: 8px 0; }
+    .progress-fill { height: 100%; width: 0.15%; background: var(--gold); transition: width 0.3s ease; }
+
+    /* SEMÁFORO Y NOTICIAS */
+    .traffic-pill { padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; }
+    .pill-red { background: rgba(239,68,68,0.2); color: var(--red); border: 1px solid var(--red); }
+    .pill-yellow { background: rgba(245,158,11,0.2); color: var(--yellow); border: 1px solid var(--yellow); }
+    .pill-green { background: rgba(16,185,129,0.2); color: var(--success); border: 1px solid var(--success); }
+    .actor-box { background: rgba(7, 10, 18, 0.7); padding: 9px 12px; border-radius: 6px; margin-top: 8px; font-size: 0.8rem; border-left: 3px solid var(--accent); }
+
+    /* MODAL ESCÁNER */
+    #scanner-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); padding: 16px; z-index: 200; align-items: center; justify-content: center; }
+    .modal-box { background: var(--card); border: 1px solid var(--accent); border-radius: 12px; padding: 16px; max-width: 440px; width: 100%; }
+    .tc-paso { margin-top: 10px; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: rgba(45,212,191,0.05); }
+    .tc-activo { border-color: var(--taichi); box-shadow: 0 0 0 1px var(--taichi); }
+    .tc-foto { display: flex; gap: 4px; width: 100%; }
+    .tc-foto label, .tc-foto button { flex: 1; background: #1a2333; color: #cbd5e1; border: none; font-size: 0.65rem; padding: 4px 0; text-align: center; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-top">
+      <h1>JARVIS STRATEGIC & FITNESS</h1>
+      <span class="badge" id="todayHeader">Cargando...</span>
+    </div>
+    <div class="voice-config">
+      <span>🎙️ Voz:</span>
+      <select class="voice-select" id="voiceSelect" onchange="savePreferredVoice()" style="flex: 1; max-width: 250px;">
+        <option value="">Cargando voces del dispositivo...</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- PESTAÑAS PRINCIPALES -->
+  <nav class="tabs-nav">
+    <button class="tab-item active" data-tab="tab-gym" onclick="showTab('tab-gym')">🏋️ Gym (Tarde)</button>
+    <button class="tab-item" data-tab="tab-running" data-modulo="running" onclick="showTab('tab-running')">🏃 Running</button>
+    <button class="tab-item" data-tab="tab-taichi" data-modulo="taichi" onclick="showTab('tab-taichi')">🧘 Tai Chi</button>
+    <button class="tab-item" data-tab="tab-espiritual" onclick="showTab('tab-espiritual')">📿 Rosario & Biblia</button>
+    <button class="tab-item" data-tab="tab-trading" onclick="showTab('tab-trading')">📈 Trading & Cripto</button>
+    <button class="tab-item" data-tab="tab-noticias" onclick="showTab('tab-noticias')">📰 Informativo</button>
+  </nav>
+
+  <main class="container">
+
+    <!-- REPRODUCTOR MP3 OFFLINE COMPARTIDO -->
+    <div class="music-panel" id="music-panel">
+      <div class="music-header">
+        <div class="music-title" id="music-track-title">🎵 Sin pistas cargadas</div>
+        <label class="load-mp3-label" for="mp3-input">+ Cargar MP3</label>
+        <input type="file" id="mp3-input" accept="audio/mp3,audio/*" multiple onchange="loadUserAudio(event)">
+      </div>
+      <div class="music-controls">
+        <button class="btn-music" onclick="prevAudio()">⏮</button>
+        <button class="btn-music" id="btn-play-pause" onclick="togglePlayAudio()">▶ Play</button>
+        <button class="btn-music" onclick="nextAudio()">⏭</button>
+        <span style="font-size:0.72rem; color:var(--sub);" id="music-playlist-count">0 pistas</span>
+      </div>
+      <audio id="native-audio" onended="nextAudio()"></audio>
+    </div>
+
+    <!-- ==================== 1. PESTAÑA: GIMNASIO & ANATOMÍA DELAVIER ==================== -->
+    <section id="tab-gym" class="panel active">
+      <div id="music-slot-tab-gym"></div>
+      
+      <!-- Escáner de Máquinas -->
+      <label class="jarvis-scanner-btn" for="camera-input">
+        📷 ESCANEAR MÁQUINA CON JARVIS
+      </label>
+      <input type="file" id="camera-input" accept="image/*" capture="environment" onchange="scanMachine(event)">
+
+      <!-- Temporizador de Descanso entre Series -->
+      <div class="timer-panel">
+        <div>
+          <div style="font-size:0.68rem; color:var(--sub);">DESCANSO ENTRE SERIES</div>
+          <div class="timer-display" id="restTimerDisplay">01:30</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn-secondary" style="padding:5px 8px; font-size:0.75rem;" onclick="startRestTimer(60)">60s</button>
+          <button class="btn-secondary" style="padding:5px 8px; font-size:0.75rem;" onclick="startRestTimer(90)">90s</button>
+          <button class="btn-secondary" style="padding:5px 8px; font-size:0.75rem;" onclick="stopRestTimer()">Parar</button>
+        </div>
+      </div>
+
+      <!-- Sub-pestañas de días de musculación -->
+      <div class="gym-tabs">
+        <button class="gym-tab-btn active" onclick="setGymDay(event, 'g-day1')">DÍA 1 (Pecho/Tríceps)</button>
+        <button class="gym-tab-btn" onclick="setGymDay(event, 'g-day2')">DÍA 2 (Espalda/Bíceps)</button>
+        <button class="gym-tab-btn" onclick="setGymDay(event, 'g-day3')">DÍA 3 (Pierna/Core)</button>
+      </div>
+
+      <!-- DÍA 1 GIMNASIO -->
+      <div id="g-day1" class="gym-day-content active">
+        <!-- 1. Press Banca -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">PECTORAL MAYOR</span>
+              <div class="gym-title">1. Press de Banca Plano</div>
+              <div class="gym-desc">3 series x 10 a 12 repeticiones.</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">1. DESCENSO</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg" alt="Press banca inicio"></div>
+            <div class="phase-wrap"><div class="phase-label">2. EMPUJE</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Bench_Press_-_Medium_Grip/1.jpg" alt="Press banca final"></div>
+          </div>
+          <div class="biomech">Delavier: Apoya firmemente los pies. Desciende controlando al esternón sin rebotar.</div>
+        </div>
+
+        <!-- 2. Inclinado Mancuernas -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">PECTORAL SUPERIOR</span>
+              <div class="gym-title">2. Press Inclinado con Mancuernas</div>
+              <div class="gym-desc">3 series x 10 a 12 reps (Banco a 45°).</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">1. INICIO</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Press/0.jpg" alt="Inclinado inicio"></div>
+            <div class="phase-wrap"><div class="phase-label">2. CONTRACCIÓN</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Press/1.jpg" alt="Inclinado final"></div>
+          </div>
+          <div class="biomech">Delavier: Focaliza el haz clavicular protegiendo la cápsula articular a los 50 años.</div>
+        </div>
+
+        <!-- 3. Aperturas -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">PECTORAL</span>
+              <div class="gym-title">3. Aperturas en Banco Plano</div>
+              <div class="gym-desc">3 series x 12 repeticiones.</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">1. APERTURA</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Flyes/0.jpg" alt="Aperturas"></div>
+            <div class="phase-wrap"><div class="phase-label">2. CIERRE</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Flyes/1.jpg" alt="Aperturas final"></div>
+          </div>
+          <div class="biomech">Delavier: Codos ligeramente flexionados para cuidar tendones pectorales y bíceps.</div>
+        </div>
+
+        <!-- 4. Elevaciones Laterales -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">DELTOIDES MEDIO</span>
+              <div class="gym-title">4. Elevaciones Laterales con Mancuernas</div>
+              <div class="gym-desc">3 series x 12 a 15 repeticiones.</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">1. ABAJO</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/0.jpg" alt="Laterales"></div>
+            <div class="phase-wrap"><div class="phase-label">2. HORIZONTAL</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/1.jpg" alt="Laterales fin"></div>
+          </div>
+          <div class="biomech">Delavier: Eleva solo hasta la horizontal para no pinzar el supraespinoso.</div>
+        </div>
+
+        <!-- 5. Tríceps Polea -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">TRÍCEPS</span>
+              <div class="gym-title">5. Extensión en Polea Alta</div>
+              <div class="gym-desc">3 series x 12 repeticiones.</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">1. FLEXIÓN</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg" alt="Tríceps polea"></div>
+            <div class="phase-wrap"><div class="phase-label">2. EXTENSIÓN</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/1.jpg" alt="Tríceps fin"></div>
+          </div>
+          <div class="biomech">Delavier: Codos pegados a los costados; contracción isométrica de 1 segundo abajo.</div>
+        </div>
+      </div>
+
+      <!-- DÍA 2 GIMNASIO -->
+      <div id="g-day2" class="gym-day-content">
+        <!-- 1. Jalón Pecho -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">DORSAL ANCHO</span>
+              <div class="gym-title">1. Jalón Abierto al Pecho</div>
+              <div class="gym-desc">3 series x 10 a 12 repeticiones.</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">1. ESTIRAMIENTO</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/0.jpg" alt="Jalon"></div>
+            <div class="phase-wrap"><div class="phase-label">2. TRACCIÓN</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/1.jpg" alt="Jalon fin"></div>
+          </div>
+          <div class="biomech">Delavier: Tira hacia la horquilla esternal llevando codos hacia atrás.</div>
+        </div>
+
+        <!-- 2. Remo Polea -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">ESPALDA MEDIA</span>
+              <div class="gym-title">2. Remo Sentado en Polea Baja</div>
+              <div class="gym-desc">3 series x 10 a 12 repeticiones.</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">1. EXTENSIÓN</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg" alt="Remo"></div>
+            <div class="phase-wrap"><div class="phase-label">2. APROXIMACIÓN</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/1.jpg" alt="Remo fin"></div>
+          </div>
+          <div class="biomech">Delavier: Espalda recta sin balanceos; aproxima omóplatos al final.</div>
+        </div>
+
+        <!-- 3. Bíceps Barra -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">BÍCEPS</span>
+              <div class="gym-title">3. Curl con Barra de Pie</div>
+              <div class="gym-desc">3 series x 10 a 12 repeticiones.</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">1. ABAJO</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg" alt="Curl barra"></div>
+            <div class="phase-wrap"><div class="phase-label">2. FLEXIÓN</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/1.jpg" alt="Curl fin"></div>
+          </div>
+          <div class="biomech">Delavier: Contrae glúteos y abdomen para no arquear la columna lumbar.</div>
+        </div>
+
+        <!-- 4. Curl Martillo -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">BRAQUIAL & ANTEBRAZO</span>
+              <div class="gym-title">4. Curl Martillo con Mancuernas</div>
+              <div class="gym-desc">3 series x 10 a 12 repeticiones.</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">1. INICIO</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hammer_Curls/0.jpg" alt="Martillo"></div>
+            <div class="phase-wrap"><div class="phase-label">2. CONTRACCIÓN</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hammer_Curls/1.jpg" alt="Martillo fin"></div>
+          </div>
+          <div class="biomech">Delavier: Refuerza el braquiorradial y da estabilidad al codo frente a sobrecargas.</div>
+        </div>
+      </div>
+
+      <!-- DÍA 3 GIMNASIO -->
+      <div id="g-day3" class="gym-day-content">
+        <!-- 1. Prensa Inclinada -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">PIERNA COMPLETA</span>
+              <div class="gym-title">1. Prensa de Piernas Inclinada</div>
+              <div class="gym-desc">3 series x 10 a 12 repeticiones.</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">1. BAJADA 90°</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/1.jpg" alt="Prensa flex"></div>
+            <div class="phase-wrap"><div class="phase-label">2. EMPUJE</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg" alt="Prensa ext"></div>
+          </div>
+          <div class="biomech">Delavier: Glúteos y sacro firmes al respaldo; no bloquees las rodillas arriba.</div>
+        </div>
+
+        <!-- 2. Leg Extension -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">CUÁDRICEPS</span>
+              <div class="gym-title">2. Extensión de Rodillas en Máquina</div>
+              <div class="gym-desc">3 series x 10 a 12 repeticiones.</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">1. FLEXIÓN</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/0.jpg" alt="Leg ext"></div>
+            <div class="phase-wrap"><div class="phase-label">2. EXTENSIÓN</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/1.jpg" alt="Leg ext fin"></div>
+          </div>
+          <div class="biomech">Delavier: Aislamiento estricto de cuádriceps; controla la fase excéntrica (bajada).</div>
+        </div>
+
+        <!-- 3. Plancha Core -->
+        <div class="gym-card">
+          <div class="gym-card-top">
+            <input type="checkbox" onchange="toggleDoneGym(this)">
+            <div style="flex:1;">
+              <span class="badge">CORE</span>
+              <div class="gym-title">3. Plancha Abdominal Isométrica</div>
+              <div class="gym-desc">3 series x 30 a 45 segundos.</div>
+            </div>
+          </div>
+          <div class="dual-movement-box">
+            <div class="phase-wrap"><div class="phase-label">TABLA RECTA</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg" alt="Plancha"></div>
+            <div class="phase-wrap"><div class="phase-label">SOSTÉN</div><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/1.jpg" alt="Plancha fin"></div>
+          </div>
+          <div class="biomech">Delavier: Activa el transverso protegiendo discos lumbares sin flexión espinal.</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== 2. PESTAÑA: RUNNING & COACH 10K ==================== -->
+    <section id="tab-running" class="panel">
+      <div id="music-slot-tab-running"></div>
+      <div class="card" style="border-color:var(--running);">
+        <div class="card-head">
+          <span class="card-title" style="color:var(--running);">🏃 Entrenador de Carrera Progresivo (10K)</span>
+          <span class="badge" id="run-km-badge" style="color:#fff; background:var(--running);">1 km</span>
+        </div>
+
+        <label style="font-size:0.72rem; color:var(--sub); display:block; margin-top:4px;">SELECCIONA TU SEMANA:</label>
+        <select class="input-dark" id="week-selector" onchange="setupWeekRoutine()" style="width:100%; margin-top:4px;">
+          <option value="1">Semana 1 (Meta 1 km) - Trote 1 min / Camina 2 min</option>
+          <option value="2">Semana 2 (Meta 2 km) - Trote 2 min / Camina 1.5 min</option>
+          <option value="3">Semana 3 (Meta 3 km) - Trote 3 min / Camina 1 min</option>
+          <option value="4">Semana 4 (Meta 4 km) - Trote 5 min / Camina 1 min</option>
+          <option value="5">Semana 5 (Meta 5 km) - Trote 8 min / Camina 1 min</option>
+          <option value="6">Semana 6 (Meta 6 km) - Trote 12 min / Camina 1 min</option>
+          <option value="7">Semana 7 (Meta 7 km) - Trote 15 min / Camina 1 min</option>
+          <option value="8">Semana 8 (Meta 8 km) - Trote 20 min continuo</option>
+          <option value="9">Semana 9 (Meta 9 km) - Trote 25 min continuo</option>
+          <option value="10">Semana 10 (Meta 10 km) - ¡CARRERA COMPLETA 10K!</option>
+        </select>
+
+        <div class="coach-screen">
+          <div class="coach-phase" id="coach-phase">LISTO PARA EMPEZAR</div>
+          <div class="coach-time" id="coach-time">00:00</div>
+          <div class="coach-inst" id="coach-instruction">Presiona INICIAR en la ruta o calle.</div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button class="btn-main btn-coach-start" style="flex:1;" id="btn-run-start" onclick="toggleRunSession()">▶ INICIAR SESIÓN</button>
+          <button class="btn-secondary btn-coach-stop" onclick="stopRunSession()">⏹ DETENER</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <p style="font-size:0.8rem; color:var(--sub); margin-bottom:8px;">¿Quieres rezar mientras trotas? Inicia el Rosario y vuelve aquí: la voz sigue sonando.</p>
+        <button class="btn-secondary" onclick="showTab('tab-espiritual')">📿 Ir al Rosario</button>
+      </div>
+    </section>
+
+    <!-- ==================== TAI CHI ==================== -->
+    <section id="tab-taichi" class="panel"><div id="taichi-root"></div></section>
+
+    <!-- ==================== 3. PESTAÑA: ESPIRITUAL (ROSARIO & BIBLIA) ==================== -->
+    <section id="tab-espiritual" class="panel">
+      <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="card-title">🎧 Velocidad de la voz</span>
+        <select class="speed-select" id="relVel">
+          <option value="0.95">Pausado (0.95x)</option>
+          <option value="1.0" selected>Normal (1.0x)</option>
+          <option value="1.15">Ligero (1.15x)</option>
+        </select>
+      </div>
+      <!-- Rosario Completo Secuencial -->
+      <div class="card" style="border-top: 3px solid var(--gold);">
+        <div class="card-head">
+          <span class="card-title" style="color:var(--gold);">📿 Santo Rosario Completo</span>
+          <span class="badge" id="rosarioMysteryName">Misterios</span>
+        </div>
+        <p style="font-size:0.8rem; color:var(--sub); margin-bottom:10px;">
+          Rezo íntegro continuo: Señal de la Cruz, Credo completo de los Apóstoles, Padre Nuestro, 5 decenas completas (50 Ave Marías), Glorias, Fátima y Salve final.
+        </p>
+        <div id="ctrl-rosario" style="margin-bottom:8px;"></div>
+        <div id="rosarioStepIndicator" style="font-size: 0.78rem; color: var(--accent); font-family: monospace;">Listo para iniciar</div>
+      </div>
+
+      <!-- Toda la Biblia en 2 Años -->
+      <div class="card" style="border-top: 3px solid var(--accent);">
+        <div class="card-head">
+          <span class="card-title">📖 Meta Bíblica: En 2 Años</span>
+          <span class="badge" id="bibleDayBadge">Día 1 / 730</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="bibleProgressBar"></div></div>
+
+        <div style="background: rgba(15,23,42,0.8); padding: 10px; border-radius: 8px; margin: 10px 0; border-left: 3px solid var(--accent);">
+          <div style="font-weight: 700; font-size: 0.85rem;" id="bibleTodayTarget">Antiguo Testamento: Génesis 1-2 | Salmo 1</div>
+          <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 4px;" id="bibleTodayTheme">Enfoque: La creación y el camino de la justicia.</div>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <button class="btn-main" onclick="advanceBibleDay()">✓ Marcar Leído</button>
+          <button class="btn-secondary" onclick="setManualBibleDay(-1)">Día -1</button>
+          <button class="btn-secondary" onclick="setManualBibleDay(1)">Día +1</button>
+          <div id="ctrl-biblia" style="width:100%; margin-top:4px;"></div>
+          <div id="bible-texto" style="width:100%; margin-top:8px;"></div>
+        </div>
+      </div>
+
+      <div id="rel-dia"></div>
+    </section>
+
+    <!-- ==================== 4. PESTAÑA: TRADING & CRIPTO BOLIVIA ==================== -->
+    <section id="tab-trading" class="panel">
+      <!-- Calculadora de Gestión de Riesgo -->
+      <div class="card" style="border-top: 3px solid var(--accent);">
+        <div class="card-head">
+          <span class="card-title">🛡️ Calculadora de Riesgo (Regla 1% - 2%)</span>
+          <span class="badge">Disciplina Clave</span>
+        </div>
+        <p style="font-size:0.78rem; color:var(--sub); margin-bottom:10px;">Calcula cuánto puedes perder como máximo por operación antes de entrar al mercado.</p>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+          <div>
+            <label style="font-size:0.72rem; color:var(--sub);">Capital de la Cuenta ($):</label>
+            <input type="number" id="tradeCapital" class="input-dark" style="width:100%;" value="500" oninput="calcTradingRisk()">
+          </div>
+          <div>
+            <label style="font-size:0.72rem; color:var(--sub);">Riesgo Máximo (%):</label>
+            <select id="tradeRiskPct" class="input-dark" style="width:100%;" onchange="calcTradingRisk()">
+              <option value="1" selected>1% (Conservador)</option>
+              <option value="2">2% (Moderado)</option>
+              <option value="3">3% (Límite Máximo)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="background: rgba(0,242,254,0.06); padding: 10px; border-radius: 8px; border: 1px solid rgba(0,242,254,0.2);">
+          <div style="font-size:0.75rem; color:var(--sub);">Pérdida Máxima Permitida por Trade:</div>
+          <div id="tradeRiskResult" style="font-size:1.4rem; font-weight:800; color:var(--accent); font-family:monospace;">$5.00 USDT</div>
+          <div style="font-size:0.72rem; color:#cbd5e1; margin-top:4px;">Si tu Stop Loss te cuesta más de este monto, reduce el tamaño de tu lote.</div>
+        </div>
+      </div>
+
+      <!-- Monitor Arbitraje P2P Bolivia -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">💵 Calculadora de Margen P2P (Bolivia)</span>
+          <span class="badge" style="color:var(--gold); border-color:var(--gold);">BOB / USDT</span>
+        </div>
+        <p style="font-size:0.78rem; color:var(--sub); margin-bottom:10px;">Calcula tu beneficio neto en bolivianos al comprar y vender USDT.</p>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+          <div>
+            <label style="font-size:0.72rem; color:var(--sub);">Precio Compra USDT (BOB):</label>
+            <input type="number" id="p2pBuyPrice" class="input-dark" style="width:100%;" value="13.20" step="0.05" oninput="calcP2PMargin()">
+          </div>
+          <div>
+            <label style="font-size:0.72rem; color:var(--sub);">Precio Venta USDT (BOB):</label>
+            <input type="number" id="p2pSellPrice" class="input-dark" style="width:100%;" value="13.45" step="0.05" oninput="calcP2PMargin()">
+          </div>
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:0.72rem; color:var(--sub);">Volumen Operado (USDT):</label>
+          <input type="number" id="p2pVolume" class="input-dark" style="width:100%;" value="200" oninput="calcP2PMargin()">
+        </div>
+
+        <div style="background: rgba(251,191,36,0.06); padding: 10px; border-radius: 8px; border: 1px solid rgba(251,191,36,0.2);">
+          <div style="font-size:0.75rem; color:var(--sub);">Ganancia Bruta Estimada:</div>
+          <div id="p2pProfitResult" style="font-size:1.4rem; font-weight:800; color:var(--gold); font-family:monospace;">+50.00 BOB</div>
+          <div id="p2pSpreadResult" style="font-size:0.72rem; color:#cbd5e1; margin-top:4px;">Spread: 0.25 BOB por USDT (1.89%)</div>
+        </div>
+      </div>
+
+      <!-- Checklist de Verificación de Cuenta -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px;">Estado de Cuenta Binance (Bolivia)</div>
+        <div style="font-size:0.8rem; color:#cbd5e1; line-height:1.45;">
+          • <strong>KYC:</strong> Verificación de Cédula de Identidad.<br>
+          • <strong>PEP:</strong> Declaración de ex-Director General de Asuntos Jurídicos de Cancillería (Enviada a Compliance).<br>
+          • <strong>Regla Banco:</strong> Transferencias únicamente desde cuenta personal titular (sin terceros ni palabras como 'cripto' en el motivo).
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. PESTAÑA: NOTICIAS & SEMÁFORO ==================== -->
+    <section id="tab-noticias" class="panel">
+      <div class="card" style="background:#091224; border-color:var(--accent);">
+        <div class="card-head">
+          <span class="card-title">🔊 Noticiero Estratégico</span>
+          <select class="speed-select" id="newsSpeed">
+            <option value="1">1.0x</option>
+            <option value="1.25" selected>1.25x</option>
+            <option value="1.5">1.5x</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:6px;">
+          <button class="btn-main" style="flex:1;" onclick="readAllNews()">▶️ Reproducir todo</button>
+          <button class="btn-secondary" onclick="cargarNoticias(true)">🔄 Actualizar</button>
+          <button class="btn-secondary" style="background:var(--red);" onclick="stopAudio()">⏹️</button>
+        </div>
+        <div id="news-status" style="font-size:0.72rem; color:var(--sub); margin-top:8px;">Cargando noticias...</div>
+      </div>
+      <div id="news-root"></div>
+    </section>
+
+    </main>
+
+  <!-- MODAL ESCÁNER JARVIS -->
+  <div id="scanner-modal">
+    <div class="modal-box">
+      <div class="card-title" id="scan-title" style="color:var(--accent);">IDENTIFICANDO EQUIPO...</div>
+      <div id="scan-result" style="font-size:0.8rem; line-height:1.45; color:var(--text); margin-top:8px;">Jarvis está procesando la imagen...</div>
+      <button class="btn-main" style="width:100%; margin-top:12px; justify-content:center;" onclick="closeModal()">Entendido, Jarvis</button>
+    </div>
+  </div>
+
+  <script>
+    // Fecha y Configuración de Día
+    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const now = new Date();
+    const diaForzado = new URLSearchParams(location.search).get('dia'); // solo para pruebas: ?dia=2
+    const day = (diaForzado !== null && diaForzado >= 0 && diaForzado <= 6) ? parseInt(diaForzado) : now.getDay();
+    document.getElementById('todayHeader').innerText = `${days[day]} ${now.getDate()}/${now.getMonth()+1}`;
+
+    // CALENDARIO SEMANAL: única fuente de verdad (0=domingo ... 6=sábado)
+    const CALENDARIO = { running: [1, 3, 5], taichi: [2, 4, 6] };
+    const planDelDia = CALENDARIO.running.includes(day) ? 'Running' : CALENDARIO.taichi.includes(day) ? 'Tai Chi' : 'Descanso';
+    document.getElementById('todayHeader').innerText += ' · ' + planDelDia;
+
+    // Pestañas (por identificador)
+    const MUSICA_EN = ['tab-gym', 'tab-running'];
+    function showTab(tabId) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-item').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+      document.getElementById(tabId).classList.add('active');
+      if (MUSICA_EN.includes(tabId)) document.getElementById('music-slot-' + tabId).appendChild(document.getElementById('music-panel'));
+      else pauseMusic();
+    }
+    function pauseMusic() {
+      const a = document.getElementById('native-audio');
+      if (a && !a.paused) a.pause();
+      document.getElementById('btn-play-pause').innerText = "▶ Play";
+    }
+    function aplicarCalendario() {
+      document.querySelectorAll('.tab-item[data-modulo]').forEach(b => {
+        b.style.display = CALENDARIO[b.dataset.modulo].includes(day) ? '' : 'none';
+      });
+      const activa = document.querySelector('.tab-item.active');
+      showTab(activa && activa.style.display !== 'none' ? activa.dataset.tab : 'tab-gym');
+    }
+
+    // Sub-pestañas Gym
+    function setGymDay(evt, gDayId) {
+      document.querySelectorAll('.gym-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.gym-day-content').forEach(c => c.classList.remove('active'));
+      evt.currentTarget.classList.add('active');
+      document.getElementById(gDayId).classList.add('active');
+    }
+
+    function toggleDoneGym(chk) {
+      const card = chk.closest('.gym-card');
+      card.classList.toggle('done', chk.checked);
+      if (chk.checked) startRestTimer(90);
+    }
+
+    // REPRODUCTOR MP3 OFFLINE
+    let audioPlaylist = [];
+    let currentTrackIndex = 0;
+    const audioElement = document.getElementById('native-audio');
+
+    function loadUserAudio(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+      audioPlaylist = Array.from(files);
+      currentTrackIndex = 0;
+      document.getElementById('music-playlist-count').innerText = `${audioPlaylist.length} pista(s)`;
+      playCurrentTrack();
+    }
+
+    function playCurrentTrack() {
+      if (audioPlaylist.length === 0) return;
+      const file = audioPlaylist[currentTrackIndex];
+      document.getElementById('music-track-title').innerText = `🎵 ${file.name}`;
+      audioElement.src = URL.createObjectURL(file);
+      audioElement.play();
+      document.getElementById('btn-play-pause').innerText = "⏸ Pausa";
+    }
+
+    function togglePlayAudio() {
+      if (!audioElement.src && audioPlaylist.length > 0) {
+        playCurrentTrack();
+        return;
+      }
+      if (audioElement.paused) {
+        audioElement.play();
+        document.getElementById('btn-play-pause').innerText = "⏸ Pausa";
+      } else {
+        audioElement.pause();
+        document.getElementById('btn-play-pause').innerText = "▶ Play";
+      }
+    }
+
+    function nextAudio() {
+      if (audioPlaylist.length === 0) return;
+      currentTrackIndex = (currentTrackIndex + 1) % audioPlaylist.length;
+      playCurrentTrack();
+    }
+
+    function prevAudio() {
+      if (audioPlaylist.length === 0) return;
+      currentTrackIndex = (currentTrackIndex - 1 + audioPlaylist.length) % audioPlaylist.length;
+      playCurrentTrack();
+    }
+
+    // TEMPORIZADOR ÚNICO (basado en Date.now: no se atrasa con la pantalla apagada)
+    const fmt = sec => `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+    function countdown(seconds, onTick, onEnd) {
+      const fin = Date.now() + seconds * 1000; let ultimo = -1;
+      onTick(seconds);
+      const id = setInterval(() => {
+        const left = Math.max(0, Math.ceil((fin - Date.now()) / 1000));
+        if (left !== ultimo) { ultimo = left; onTick(left); }
+        if (left <= 0) { clearInterval(id); onEnd(); }
+      }, 250);
+      return { stop() { clearInterval(id); } };
+    }
+
+    // DESCANSO GYM
+    let restTimer = null;
+    function startRestTimer(seconds) {
+      if (restTimer) restTimer.stop();
+      const d = document.getElementById('restTimerDisplay');
+      restTimer = countdown(seconds, left => { d.innerText = fmt(left); }, () => {
+        d.innerText = "¡A entrenar!";
+        if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+      });
+    }
+    function stopRestTimer() {
+      if (restTimer) restTimer.stop();
+      document.getElementById('restTimerDisplay').innerText = "01:30";
+    }
+
+    // COACH RUNNING 10K
+    const runPlans = {
+      1: { km: "1 km", intervals: [ {name:"CALENTAMIENTO", t:180, msg:"Camina a paso ágil y suelta los hombros."}, {name:"TROTE SUAVE", t:60, msg:"Trote suave, respirando por nariz y boca."}, {name:"CAMINATA ACTIVA", t:120, msg:"Camina y recupera pulsaciones tranquilamente."}, {name:"TROTE SUAVE", t:60, msg:"Segundo bloque de trote suave."}, {name:"ENFRIAMIENTO", t:180, msg:"Camina despacio y recupera el aliento."} ] },
+      2: { km: "2 km", intervals: [ {name:"CALENTAMIENTO", t:180, msg:"Caminata ágil."}, {name:"TROTE CONTINUO", t:120, msg:"Corre a ritmo conversacional."}, {name:"CAMINATA", t:90, msg:"Camina sin detenerte."}, {name:"TROTE CONTINUO", t:120, msg:"Zancada corta y cadencia ágil."}, {name:"CAMINATA", t:90, msg:"Recupera."}, {name:"TROTE FINAL", t:120, msg:"Último trote con energía."}, {name:"ENFRIAMIENTO", t:180, msg:"Caminata suave de cierre."} ] },
+      3: { km: "3 km", intervals: [ {name:"CALENTAMIENTO", t:240, msg:"Marcha activa."}, {name:"CORRER", t:180, msg:"Trote rítmico y constante."}, {name:"CAMINAR", t:60, msg:"1 min caminando."}, {name:"CORRER", t:180, msg:"Buen ritmo."}, {name:"CAMINAR", t:60, msg:"Recupera."}, {name:"CORRER", t:180, msg:"Último tramo de carrera."}, {name:"ENFRIAMIENTO", t:180, msg:"Marcha final."} ] },
+      4: { km: "4 km", intervals: [ {name:"CALENTAMIENTO", t:240, msg:"Marcha activa."}, {name:"CORRER", t:300, msg:"5 minutos corriendo."}, {name:"CAMINAR", t:90, msg:"Camina y respira profundo."}, {name:"CORRER", t:300, msg:"5 minutos a buen paso."}, {name:"CAMINAR", t:90, msg:"Recupera."}, {name:"CORRER", t:300, msg:"5 minutos finales."}, {name:"ENFRIAMIENTO", t:180, msg:"Enfriamiento."} ] },
+      5: { km: "5 km", intervals: [ {name:"CALENTAMIENTO", t:300, msg:"Caminata rápida."}, {name:"CORRER", t:480, msg:"8 minutos de carrera fluida."}, {name:"CAMINAR", t:90, msg:"Descanso activo."}, {name:"CORRER", t:480, msg:"8 minutos sosteniendo el ritmo."}, {name:"CAMINAR", t:90, msg:"Recupera."}, {name:"CORRER", t:480, msg:"8 minutos: ¡completando los 5 km!"}, {name:"ENFRIAMIENTO", t:240, msg:"Vuelta a la calma."} ] },
+      6: { km: "6 km", intervals: [ {name:"CALENTAMIENTO", t:300, msg:"Activación."}, {name:"CORRER", t:720, msg:"12 minutos corriendo continuo."}, {name:"CAMINAR", t:120, msg:"2 minutos de caminata ágil."}, {name:"CORRER", t:720, msg:"12 minutos a ritmo regular."}, {name:"ENFRIAMIENTO", t:240, msg:"Enfriamiento."} ] },
+      7: { km: "7 km", intervals: [ {name:"CALENTAMIENTO", t:300, msg:"Activación aeróbica."}, {name:"CORRER", t:900, msg:"15 minutos seguidos."}, {name:"CAMINAR", t:120, msg:"Camina y bebe un sorbo de agua."}, {name:"CORRER", t:900, msg:"15 minutos firmes sin parar."}, {name:"ENFRIAMIENTO", t:300, msg:"Vuelta a la calma."} ] },
+      8: { km: "8 km", intervals: [ {name:"CALENTAMIENTO", t:300, msg:"Trote suave."}, {name:"CORRER", t:1200, msg:"20 minutos continuos."}, {name:"CAMINAR", t:120, msg:"Caminata breve."}, {name:"CORRER", t:900, msg:"15 minutos finales a ritmo seguro."}, {name:"ENFRIAMIENTO", t:300, msg:"Cierre."} ] },
+      9: { km: "9 km", intervals: [ {name:"CALENTAMIENTO", t:300, msg:"Calentamiento progresivo."}, {name:"CORRER", t:1500, msg:"25 minutos de carrera."}, {name:"CAMINAR", t:120, msg:"Caminata rápida."}, {name:"CORRER", t:900, msg:"15 minutos sólidos."}, {name:"ENFRIAMIENTO", t:300, msg:"Enfriamiento."} ] },
+      10: { km: "10 km", intervals: [ {name:"CALENTAMIENTO", t:300, msg:"5 min de trote ligero."}, {name:"CARRERA 10K", t:3000, msg:"¡DÍA DE META! 50 min de carrera continua."}, {name:"ENFRIAMIENTO", t:300, msg:"¡OBJETIVO 10K CUMPLIDO!"} ] }
+    };
+
+    let runTimer = null, runStep = 0, runLeft = 0, runActive = false;
+    const runPlan = () => runPlans[document.getElementById('week-selector').value];
+    const runBtn = () => document.getElementById('btn-run-start');
+
+    function setupWeekRoutine() {
+      const week = document.getElementById('week-selector').value;
+      document.getElementById('run-km-badge').innerText = runPlans[week].km;
+      stopRunSession();
+      document.getElementById('coach-phase').innerText = "PREPARADO";
+      document.getElementById('coach-instruction').innerText = "Semana " + week + " seleccionada. Presiona INICIAR cuando estés listo.";
+    }
+    function showRunStep() {
+      const fase = runPlan().intervals[runStep];
+      document.getElementById('coach-phase').innerText = fase.name;
+      document.getElementById('coach-instruction').innerText = fase.msg;
+    }
+    function startRunStep(seconds) {
+      if (runTimer) runTimer.stop();
+      runTimer = countdown(seconds, left => { runLeft = left; document.getElementById('coach-time').innerText = fmt(left); }, () => {
+        if ('vibrate' in navigator) navigator.vibrate([300, 150, 300, 150, 400]);
+        playBeep();
+        runStep++;
+        if (runStep >= runPlan().intervals.length) { finishRun(); return; }
+        showRunStep();
+        startRunStep(runPlan().intervals[runStep].t);
+      });
+    }
+    function toggleRunSession() { if (runActive) pauseRunSession(); else startRunSession(); }
+    function startRunSession() {
+      runActive = true;
+      runBtn().innerText = "⏸ PAUSAR"; runBtn().style.background = "#eab308";
+      requestWakeLock();
+      if (runLeft <= 0) { runStep = 0; runLeft = runPlan().intervals[0].t; }
+      showRunStep();
+      startRunStep(runLeft);
+    }
+    function pauseRunSession() {
+      if (runTimer) runTimer.stop();
+      runActive = false;
+      runBtn().innerText = "▶ REANUDAR"; runBtn().style.background = "var(--running)";
+    }
+    function stopRunSession() {
+      if (runTimer) runTimer.stop();
+      runActive = false; runStep = 0; runLeft = 0;
+      runBtn().innerText = "▶ INICIAR SESIÓN"; runBtn().style.background = "var(--running)";
+      document.getElementById('coach-phase').innerText = "DETENIDO";
+      document.getElementById('coach-time').innerText = "00:00";
+      releaseWakeLock();
+    }
+    function finishRun() {
+      stopRunSession();
+      document.getElementById('coach-phase').innerText = "¡SESIÓN FINALIZADA!";
+      document.getElementById('coach-instruction').innerText = "Gran trabajo completando el entrenamiento de hoy.";
+    }
+
+    function playBeep() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+      } catch (e) {}
+    }
+
+    // ESCÁNER DE MÁQUINAS
+    function scanMachine(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      document.getElementById('scanner-modal').style.display = 'flex';
+      document.getElementById('scan-title').innerText = "IDENTIFICANDO EQUIPO...";
+      document.getElementById('scan-result').innerText = "Jarvis está verificando la máquina y contrastándola con Delavier...";
+
+      setTimeout(() => {
+        document.getElementById('scan-title').innerText = "EQUIPO DETECTADO: PRENSA DE PIERNAS";
+        document.getElementById('scan-result').innerHTML = `
+          <b>Músculos (Delavier):</b> Cuádriceps (recto anterior, vastos) y glúteos.<br><br>
+          <b>Regulación de Seguridad (50 años):</b> Coloca el tope para que la flexión de rodilla no sobrepase los 90° si sientes presión lumbar.<br><br>
+          <b>Indicación Jarvis:</b> Encaja en tu <b>Día 3</b>. Carga peso para 10-12 reps limpias sin bloquear rodillas arriba.
+        `;
+      }, 1500);
+    }
+
+    function closeModal() {
+      document.getElementById('scanner-modal').style.display = 'none';
+    }
+
+    // CÁLCULOS DE TRADING
+    function calcTradingRisk() {
+      const cap = parseFloat(document.getElementById('tradeCapital').value) || 0;
+      const pct = parseFloat(document.getElementById('tradeRiskPct').value) || 1;
+      const maxRisk = cap * (pct / 100);
+      document.getElementById('tradeRiskResult').innerText = `$${maxRisk.toFixed(2)} USDT`;
+    }
+
+    function calcP2PMargin() {
+      const buy = parseFloat(document.getElementById('p2pBuyPrice').value) || 0;
+      const sell = parseFloat(document.getElementById('p2pSellPrice').value) || 0;
+      const vol = parseFloat(document.getElementById('p2pVolume').value) || 0;
+      const spread = sell - buy;
+      const profit = spread * vol;
+      const pct = buy > 0 ? (spread / buy) * 100 : 0;
+      document.getElementById('p2pProfitResult').innerText = `${profit >= 0 ? '+' : ''}${profit.toFixed(2)} BOB`;
+      document.getElementById('p2pSpreadResult').innerText = `Spread: ${spread.toFixed(2)} BOB por USDT (${pct.toFixed(2)}%)`;
+    }
+
+    // SELECTOR DE VOZ NATURAL
+    let availableVoices = [];
+    let selectedVoice = null;
+
+    function populateVoices() {
+      availableVoices = window.speechSynthesis.getVoices();
+      const voiceSelect = document.getElementById('voiceSelect');
+      voiceSelect.innerHTML = '';
+      const spanishVoices = availableVoices.filter(v => v.lang.startsWith('es'));
+      const savedVoiceURI = localStorage.getItem('preferredVoiceURI');
+
+      spanishVoices.forEach(voice => {
+        const option = document.createElement('option');
+        option.value = voice.voiceURI;
+        let isNatural = /natural|neural|google|premium/i.test(voice.name) ? '⭐ ' : '';
+        option.textContent = `${isNatural}${voice.name} (${voice.lang})`;
+        if (savedVoiceURI && voice.voiceURI === savedVoiceURI) {
+          option.selected = true;
+          selectedVoice = voice;
+        }
+        voiceSelect.appendChild(option);
+      });
+
+      if (!selectedVoice && spanishVoices.length > 0) {
+        selectedVoice = spanishVoices.find(v => /natural|neural|google|premium/i.test(v.name)) || spanishVoices[0];
+        voiceSelect.value = selectedVoice.voiceURI;
+      }
+    }
+
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = populateVoices;
+    }
+    populateVoices();
+
+    function savePreferredVoice() {
+      const uri = document.getElementById('voiceSelect').value;
+      selectedVoice = availableVoices.find(v => v.voiceURI === uri);
+      localStorage.setItem('preferredVoiceURI', uri);
+    }
+
+    // WAKE LOCK
+    let wakeLock = null;
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
+      } catch (err) {}
+    }
+    function releaseWakeLock() {
+      if (wakeLock !== null) { wakeLock.release().then(() => { wakeLock = null; }); }
+    }
+
+    // ROSARIO COMPLETO
+    const rosarioMap = {
+      1: { name: "Misterios Gozosos", mysteries: ["La Encarnación del Hijo de Dios", "La Visitación de Nuestra Señora a su prima Santa Isabel", "El Nacimiento del Hijo de Dios en Belén", "La Purificación de la Virgen y Presentación de Jesús", "El Niño Jesús hallado en el Templo"] },
+      2: { name: "Misterios Dolorosos", mysteries: ["La Oración de Jesús en el Huerto", "La Flagelación de Nuestro Señor", "La Coronación de espinas", "Jesús con la Cruz a cuestas", "La Crucifixión y Muerte de Nuestro Señor"] },
+      3: { name: "Misterios Gloriosos", mysteries: ["La Resurrección de Jesús", "La Ascensión de Jesús al Cielo", "La Venida del Espíritu Santo", "La Asunción de la Virgen María", "La Coronación de María Santísima"] },
+      4: { name: "Misterios Luminosos", mysteries: ["El Bautismo en el Jordán", "Las Bodas de Caná", "El Anuncio del Reino de Dios", "La Transfiguración", "La Institución de la Eucaristía"] },
+      5: { name: "Misterios Dolorosos", mysteries: ["La Oración de Jesús en el Huerto", "La Flagelación de Nuestro Señor", "La Coronación de espinas", "Jesús con la Cruz a cuestas", "La Crucifixión y Muerte de Nuestro Señor"] },
+      6: { name: "Misterios Gozosos", mysteries: ["La Encarnación del Hijo de Dios", "La Visitación de Nuestra Señora a su prima Santa Isabel", "El Nacimiento del Hijo de Dios en Belén", "La Purificación de la Virgen y Presentación de Jesús", "El Niño Jesús hallado en el Templo"] },
+      0: { name: "Misterios Gloriosos", mysteries: ["La Triunfal Resurrección de Jesús", "La Admirable Ascensión al Cielo", "La Venida del Espíritu Santo", "La Asunción de la Virgen María", "La Coronación de María Santísima"] }
+    };
+    const currentRosario = rosarioMap[day];
+    document.getElementById('rosarioMysteryName').innerText = currentRosario.name;
+
+
+    function buildRosaryQueue(mysteryName, list) {
+      const pN = "Padre nuestro que estás en el cielo, santificado sea tu nombre; venga a nosotros tu reino; hágase tu voluntad en la tierra como en el cielo. Danos hoy nuestro pan de cada día; perdona nuestras ofensas, como también nosotros perdonamos a los que nos ofenden; no nos dejes caer en la tentación, y líbranos del mal. Amén.";
+      const aM = "Dios te salve, María, llena eres de gracia; el Señor es contigo. Bendita tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús. Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.";
+      const gl = "Gloria al Padre, y al Hijo, y al Espíritu Santo. Como era en el principio, ahora y siempre, por los siglos de los siglos. Amén.";
+      const ft = "Oh Jesús mío, perdona nuestros pecados, líbranos del fuego del infierno, lleva al cielo a todas las almas, especialmente a las más necesitadas de tu divina misericordia.";
+
+      let queue = [];
+      queue.push("Por la señal de la Santa Cruz, de nuestros enemigos, líbranos Señor Dios nuestro. En el nombre del Padre, del Hijo y del Espíritu Santo. Amén.");
+      queue.push("Creo en Dios Padre Todopoderoso, Creador del cielo y de la tierra. Y en Jesucristo su único Hijo Nuestro Señor, que fue concebido por obra y gracia del Espíritu Santo, nació de Santa María Virgen.");
+      queue.push("Padeció bajo el poder de Poncio Pilato, fue crucificado, muerto y sepultado, descendió a los infiernos, al tercer día resucitó de entre los muertos, subió a los cielos y está sentado a la derecha de Dios Padre Todopoderoso. Desde allí ha de venir a juzgar a vivos y muertos.");
+      queue.push("Creo en el Espíritu Santo, la santa Iglesia católica, la comunión de los santos, el perdón de los pecados, la resurrección de la carne y la vida eterna. Amén.");
+      queue.push("Ofrecemos este Santo Rosario por nuestra jornada, la salud, la familia, el discernimiento y la paz.");
+      queue.push(pN);
+      for(let i = 0; i < 3; i++) queue.push(aM);
+      queue.push(gl);
+
+      list.forEach((m, idx) => {
+        queue.push(`Misterio número ${idx + 1}: ${m}.`);
+        queue.push(pN);
+        for(let i = 0; i < 10; i++) queue.push(aM);
+        queue.push(gl);
+        queue.push(ft);
+      });
+
+      queue.push("Dios te salve, Reina y Madre de misericordia, vida, dulzura y esperanza nuestra. Dios te salve, a ti llamamos los desterrados hijos de Eva; a ti suspiramos, gimiendo y llorando en este valle de lágrimas. Ea, pues, Señora, abogada nuestra, vuelve a nosotros esos tus ojos misericordiosos; y después de este destierro muéstranos a Jesús, fruto bendito de tu vientre. ¡Oh clementísima, oh piadosa, oh dulce Virgen María! Ruega por nosotros, Santa Madre de Dios, para que seamos dignos de alcanzar las promesas de Nuestro Señor Jesucristo. En el nombre del Padre, del Hijo y del Espíritu Santo. Amén.");
+      return queue;
+    }
+
+
+    // BIBLIA EN 2 AÑOS
+    let currentBibleDay = parseInt(localStorage.getItem('bibleDay') || '1');
+    // BIBLIA EN 2 AÑOS: Biblia católica libre cargada desde un ZIP USFM (eBible.org), repartida por palabras en 730 días
+    // <BIBLIA-PURO>
+    const ORDEN_CATOLICO = ['GEN','EXO','LEV','NUM','DEU','JOS','JDG','RUT','1SA','2SA','1KI','2KI','1CH','2CH','EZR','NEH','TOB','JDT','EST','ESG','JOB','PSA','PRO','ECC','SNG','WIS','SIR','ISA','JER','LAM','BAR','LJE','EZK','DAN','S3Y','SUS','BEL','HOS','JOL','AMO','OBA','JON','MIC','NAM','HAB','ZEP','HAG','ZEC','MAL','1MA','2MA','MAT','MRK','LUK','JHN','ACT','ROM','1CO','2CO','GAL','EPH','PHP','COL','1TH','2TH','1TI','2TI','TIT','PHM','HEB','JAS','1PE','2PE','1JN','2JN','3JN','JUD','REV'];
+    const DEUTERO = ['TOB','JDT','WIS','SIR','BAR','1MA','2MA'];
+    const ALT_COD = { SOS: 'SNG', NAH: 'NAM', JOE: 'JOL', EZE: 'EZK' };
+
+    async function leerZip(buf) {
+      const dv = new DataView(buf), u8 = new Uint8Array(buf); let e = buf.byteLength - 22;
+      while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+      if (e < 0) throw new Error('el archivo no es un ZIP válido');
+      const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true); const out = [];
+      for (let i = 0; i < n; i++) {
+        const met = dv.getUint16(p + 10, true), comp = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true),
+              xl = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+        const nombre = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nl)); p += 46 + nl + xl + cl;
+        if (!/\.(usfm|sfm)$/i.test(nombre) || (met !== 0 && met !== 8)) continue;
+        const ini = off + 30 + dv.getUint16(off + 26, true) + dv.getUint16(off + 28, true), datos = u8.subarray(ini, ini + comp);
+        const bytes = met === 8 ? new Uint8Array(await new Response(new Blob([datos]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer()) : datos;
+        out.push([nombre, new TextDecoder('utf-8').decode(bytes)]);
+      }
+      return out;
+    }
+
+    function parsearUSFM(txt) {
+      const cod = (txt.match(/\\id\s+([A-Z0-9]{3})/) || [])[1];
+      if (!cod) return null;
+      const nombre = ((txt.match(/\\toc2\s+(.+)/) || txt.match(/\\h\s+(.+)/) || [])[1] || cod).trim();
+      txt = txt.replace(/\\f\s[\s\S]*?\\f\*/g, '').replace(/\\x\s[\s\S]*?\\x\*/g, '');
+      const caps = []; let cap = null, ver = null;
+      const nuevaV = lab => { ver = [lab, '']; cap.v.push(ver); };
+      const add = t => {
+        t = t.replace(/\\\+?[a-z]+\d?\*?/gi, '').replace(/\s+/g, ' ').trim();
+        if (!t) return; if (!ver) nuevaV('');
+        ver[1] += (ver[1] ? ' ' : '') + t;
+      };
+      for (let linea of txt.split(/\r?\n/)) {
+        linea = linea.trim(); if (!linea) continue;
+        const m = linea.match(/^\\c\s+(\d+)/);
+        if (m) { cap = { libro: nombre, cod, n: +m[1], v: [] }; caps.push(cap); ver = null; continue; }
+        if (!cap || /^\\(s\d?|r|ms\d?|mr|mt\d?|h|toc\d|id|ide|rem|cl|cp|sp|periph|qa|cd)(\s|$)/.test(linea)) continue;
+        linea = linea.replace(/^\\(p|m|mi|nb|pm|pmo|pmc|pmr|pi\d?|ph\d?|li\d?|q\d?|qm\d?|qc|qr|b|d)(\s|$)\s*/, '');
+        const partes = linea.split(/\\v\s+(\S+)\s*/);
+        add(partes[0]);
+        for (let i = 1; i < partes.length; i += 2) { nuevaV(partes[i]); add(partes[i + 1] || ''); }
+      }
+      caps.forEach(c => { c.palabras = c.v.reduce((a, x) => a + x[1].split(' ').length, 0); });
+      return { cod: ALT_COD[cod] || cod, nombre, caps: caps.filter(c => c.v.length) };
+    }
+
+    function ordenarCatolico(libros) {
+      if (libros.ESG && libros.EST) delete libros.EST;
+      return ORDEN_CATOLICO.filter(c => libros[c]).flatMap(c => libros[c].caps);
+    }
+
+    function construirPlan(caps) {
+      const total = caps.reduce((a, c) => a + c.palabras, 0), plan = []; let i = 0, cum = 0;
+      for (let d = 1; d <= 730; d++) {
+        const meta = total * d / 730, ini = i, quedan = 730 - d;
+        while (i < caps.length && (d === 730 || (i < caps.length - quedan && (i === ini || cum + caps[i].palabras / 2 <= meta)))) { cum += caps[i].palabras; i++; }
+        plan.push([ini, i - 1]);
+      }
+      return plan;
+    }
+    // </BIBLIA-PURO>
+
+    const idb = {
+      abrir() { return new Promise((ok, mal) => { const r = indexedDB.open('jarvis', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => ok(r.result); r.onerror = () => mal(r.error); }); },
+      async get(k) { const db = await this.abrir(); return new Promise((ok, mal) => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => ok(q.result); q.onerror = () => mal(q.error); }); },
+      async set(k, v) { const db = await this.abrir(); return new Promise((ok, mal) => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = ok; t.onerror = () => mal(t.error); }); }
+    };
+    let BIBLIA = null;
+
+    async function cargarBibliaDesdeZip(file) {
+      const archivos = await leerZip(await file.arrayBuffer()), libros = {};
+      archivos.forEach(([n, t]) => { const l = parsearUSFM(t); if (l) libros[l.cod] = l; });
+      const caps = ordenarCatolico(libros);
+      if (caps.length < 730) throw new Error('se leyeron solo ' + caps.length + ' capítulos (se necesitan al menos 730). ¿Es el ZIP en formato USFM?');
+      const faltan = DEUTERO.filter(c => !libros[c]);
+      return { fuente: file.name, caps, aviso: faltan.length ? 'Atención: esta versión no trae todos los libros deuterocanónicos (faltan: ' + faltan.join(', ') + ').' : '' };
+    }
+    async function cargarBibliaGuardada() {
+      try { BIBLIA = await idb.get('biblia') || null; if (BIBLIA) BIBLIA.plan = construirPlan(BIBLIA.caps); } catch (e) { BIBLIA = null; }
+      updateBibleUI();
+    }
+    function selectorZip(texto, alTerminar) {
+      const lab = el('label', 'btn-secondary', texto), inp = document.createElement('input'), est = el('div');
+      inp.type = 'file'; inp.accept = '.zip'; inp.style.display = 'none'; est.style.cssText = 'margin-top:6px; font-size:0.75rem; color:var(--gold);';
+      inp.onchange = async () => {
+        if (!inp.files[0]) return; est.innerText = 'Leyendo la Biblia, un momento...';
+        try {
+          const datos = await cargarBibliaDesdeZip(inp.files[0]); await idb.set('biblia', datos);
+          BIBLIA = datos; BIBLIA.plan = construirPlan(datos.caps); updateBibleUI();
+        } catch (e) { est.innerText = 'No se pudo cargar: ' + e.message; }
+      };
+      lab.appendChild(inp); const box = el('div'); box.append(lab, est); return box;
+    }
+    function panelCarga() {
+      const d = el('div'); d.style.cssText = 'background:#0b1220; border:1px dashed var(--border); border-radius:8px; padding:10px; font-size:0.78rem; color:#cbd5e1; line-height:1.55;';
+      d.appendChild(document.createTextNode('1) Descarga el ZIP en formato USFM de la "Santa Biblia libre para el mundo" (dominio público, canon católico) en '));
+      const a = el('a', '', 'ebible.org'); a.href = 'https://ebible.org/find/details.php?id=spablm'; a.target = '_blank'; a.rel = 'noopener'; a.style.color = 'var(--accent)';
+      d.appendChild(a); d.appendChild(document.createTextNode(' (enlace "USFM"). 2) Elígelo aquí; se guarda en este dispositivo y solo se hace una vez:'));
+      const sp = el('div'); sp.style.height = '8px'; d.append(sp, selectorZip('📂 Elegir ZIP de la Biblia')); return d;
+    }
+    function textosBiblia() {
+      if (!BIBLIA) return [];
+      const [i, f] = BIBLIA.plan[Math.min(730, Math.max(1, currentBibleDay)) - 1], out = [];
+      for (let k = i; k <= f; k++) { const c = BIBLIA.caps[k]; out.push(c.libro + ', capítulo ' + c.n + '.'); c.v.forEach(x => out.push(x[1])); }
+      return out;
+    }
+    function updateBibleUI() {
+      document.getElementById('bibleDayBadge').innerText = `Día ${currentBibleDay} / 730`;
+      document.getElementById('bibleProgressBar').style.width = `${(currentBibleDay / 730) * 100}%`;
+      const box = document.getElementById('bible-texto'), tgt = document.getElementById('bibleTodayTarget'), th = document.getElementById('bibleTodayTheme');
+      document.getElementById('ctrl-biblia').style.display = BIBLIA ? '' : 'none'; box.innerHTML = '';
+      if (!BIBLIA) { tgt.innerText = 'Falta cargar la Biblia'; th.innerText = 'Carga una Biblia católica gratuita (una sola vez) para ver y escuchar la lectura de cada día.'; box.appendChild(panelCarga()); return; }
+      const [i, f] = BIBLIA.plan[Math.min(730, Math.max(1, currentBibleDay)) - 1], a = BIBLIA.caps[i], b = BIBLIA.caps[f];
+      tgt.innerText = a.libro + ' ' + a.n + (f > i ? (a.libro === b.libro ? '–' + b.n : ' – ' + b.libro + ' ' + b.n) : '');
+      th.innerText = `Capítulos ${i + 1}${f > i ? '–' + (f + 1) : ''} de ${BIBLIA.caps.length} · ${BIBLIA.fuente}`;
+      for (let k = i; k <= f; k++) {
+        const c = BIBLIA.caps[k], t = el('div', '', c.libro + ' ' + c.n); t.style.cssText = 'font-weight:700; font-size:0.86rem; color:var(--accent); margin:10px 0 4px;'; box.appendChild(t);
+        const p = el('div'); p.style.cssText = 'font-size:0.84rem; color:#e2e8f0; line-height:1.6;';
+        c.v.forEach(x => { if (x[0]) { const sup = el('sup', '', x[0] + ' '); sup.style.cssText = 'color:var(--sub); font-size:0.65rem;'; p.appendChild(sup); } p.appendChild(document.createTextNode(x[1] + ' ')); });
+        box.appendChild(p);
+      }
+      const pie = el('div'); pie.style.cssText = 'margin-top:12px; font-size:0.7rem; color:var(--sub);';
+      pie.appendChild(document.createTextNode(`Biblia cargada: ${new Set(BIBLIA.caps.map(c => c.cod)).size} libros, ${BIBLIA.caps.length} capítulos, repartidos por extensión en 730 días. ${BIBLIA.aviso || ''}`));
+      const cam = el('button', 'btn-secondary', 'Cambiar Biblia'); cam.style.cssText = 'margin-left:6px; padding:3px 8px; font-size:0.68rem;'; cam.onclick = () => { BIBLIA = null; updateBibleUI(); };
+      pie.appendChild(cam); box.appendChild(pie);
+    }
+
+    function advanceBibleDay() {
+      currentBibleDay = Math.min(730, currentBibleDay + 1);
+      localStorage.setItem('bibleDay', currentBibleDay);
+      updateBibleUI();
+    }
+
+    function setManualBibleDay(delta) {
+      currentBibleDay = Math.max(1, Math.min(730, currentBibleDay + delta));
+      localStorage.setItem('bibleDay', currentBibleDay);
+      updateBibleUI();
+    }
+
+    updateBibleUI();
+
+    // VOZ: controlador único (pausar, reanudar y detener reales; frases cortas para que no se corte)
+    const partir = t => t.length <= 200 ? [t] : (t.match(/[^.;:!?]+[.;:!?]*\s*/g) || [t]).map(x => x.trim()).filter(Boolean);
+    const Voz = {
+      cola: [], i: 0, estado: 'idle', rate: 1, owner: null, tok: 0, onItem: null, onFin: null,
+      leer(textos, rate, o = {}) {
+        this.detener();
+        this.cola = textos.filter(Boolean).flatMap(partir); this.i = 0; this.rate = rate;
+        this.onItem = o.onItem || null; this.onFin = o.onFin || null; this.estado = 'play';
+        requestWakeLock(); this.hablar();
+      },
+      hablar() {
+        if (this.estado !== 'play') return;
+        if (this.i >= this.cola.length) { const f = this.onFin; this.detener(); if (f) f(); return; }
+        const tok = ++this.tok, u = new SpeechSynthesisUtterance(this.cola[this.i]);
+        if (selectedVoice) u.voice = selectedVoice;
+        u.lang = 'es-ES'; u.rate = parseFloat(this.rate);
+        const sig = () => { if (tok === this.tok && this.estado === 'play') { this.i++; this.hablar(); } };
+        u.onend = sig; u.onerror = sig;
+        if (this.onItem) this.onItem(this.cola[this.i]);
+        window.speechSynthesis.speak(u);
+      },
+      pausar() { if (this.estado !== 'play') return; this.estado = 'pausa'; this.tok++; window.speechSynthesis.cancel(); },
+      reanudar() { if (this.estado === 'pausa') { this.estado = 'play'; this.hablar(); } },
+      detener() { this.estado = 'idle'; this.tok++; window.speechSynthesis.cancel(); this.cola = []; this.i = 0; releaseWakeLock(); }
+    };
+
+    const CTRL = [];
+    function refrescarControles() {
+      CTRL.forEach(c => {
+        const mio = Voz.owner === c.id && Voz.estado !== 'idle';
+        c.bEsc.style.display = mio ? 'none' : '';
+        c.bPau.style.display = mio && Voz.estado === 'play' ? '' : 'none';
+        c.bRea.style.display = mio && Voz.estado === 'pausa' ? '' : 'none';
+        c.bDet.disabled = !mio; c.bDet.style.opacity = mio ? '1' : '0.4';
+      });
+    }
+    function crearControles(id, textosFn, o = {}) {
+      const box = el('div'); box.style.cssText = 'display:flex; gap:6px; flex-wrap:wrap; align-items:center;';
+      const bEsc = el('button', 'btn-main', '▶ Escuchar'), bPau = el('button', 'btn-secondary', '⏸ Pausar'),
+            bRea = el('button', 'btn-main', '▶ Reanudar'), bDet = el('button', 'btn-secondary', '⏹ Detener');
+      bEsc.onclick = () => {
+        Voz.owner = id;
+        Voz.leer(textosFn(), o.rateFn ? o.rateFn() : 1, { onItem: o.onItem, onFin: () => { if (o.onFin) o.onFin(); refrescarControles(); } });
+        refrescarControles();
+      };
+      bPau.onclick = () => { Voz.pausar(); refrescarControles(); };
+      bRea.onclick = () => { Voz.reanudar(); refrescarControles(); };
+      bDet.onclick = () => { Voz.detener(); Voz.owner = null; if (o.onStop) o.onStop(); refrescarControles(); };
+      box.append(bEsc, bPau, bRea, bDet);
+      CTRL.push({ id, bEsc, bPau, bRea, bDet }); refrescarControles();
+      return box;
+    }
+    function stopAudio() {
+      const era = Voz.owner;
+      Voz.detener(); Voz.owner = null;
+      if (era === 'rosario') document.getElementById('rosarioStepIndicator').innerText = "Audio detenido";
+      refrescarControles();
+    }
+
+    // RELIGIOSO: controles fijos y contenido diario (lecturas + reflexión)
+    const RELIGIOSO_API = '/.netlify/functions/religioso';
+    const velRel = () => document.getElementById('relVel').value;
+    function montarControlesFijos() {
+      const ind = document.getElementById('rosarioStepIndicator');
+      document.getElementById('ctrl-rosario').appendChild(crearControles('rosario',
+        () => buildRosaryQueue(currentRosario.name, currentRosario.mysteries),
+        { rateFn: velRel, onItem: t => { ind.innerText = t.length > 60 ? t.slice(0, 57) + '...' : t; },
+          onFin: () => { ind.innerText = 'Rosario completado. Amén.'; }, onStop: () => { ind.innerText = 'Audio detenido'; } }));
+      document.getElementById('ctrl-biblia').appendChild(crearControles('biblia',
+        () => textosBiblia(),
+        { rateFn: velRel }));
+    }
+
+    const hoyClave = () => { const d = new Date(); return d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0'); };
+    async function cargarReligioso() {
+      const clave = 'rel_' + hoyClave(); let data = null;
+      try { data = JSON.parse(localStorage.getItem(clave)); } catch (e) {}
+      if (!data) {
+        try {
+          const r = await fetch(RELIGIOSO_API + '?d=' + hoyClave());
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          data = await r.json();
+          if (data.reflexion) localStorage.setItem(clave, JSON.stringify(data));
+        } catch (e) { data = null; }
+      }
+      renderReligioso(data);
+    }
+
+    function enlacesLectura() {
+      const d = new Date(), iso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      const box = el('div'); box.style.cssText = 'font-size:0.75rem; color:var(--sub); margin:8px 0; line-height:1.7;';
+      box.appendChild(document.createTextNode('Otras fuentes de las lecturas de hoy: '));
+      [['EWTN', 'https://www.ewtn.com/es/catolicismo/lecturas/' + iso], ['Evangelizo', 'https://evangelizo.org'], ['Vatican News', 'https://www.vaticannews.va/es.html']].forEach(([t, u], i) => {
+        if (i) box.appendChild(document.createTextNode(' · '));
+        const a = el('a', '', t); a.href = u; a.target = '_blank'; a.rel = 'noopener'; a.style.color = 'var(--accent)'; box.appendChild(a);
+      });
+      return box;
+    }
+
+    function renderReligioso(data) {
+      const root = document.getElementById('rel-dia'); root.innerHTML = '';
+      CTRL.splice(0, CTRL.length, ...CTRL.filter(c => !['lectura', 'evangelio', 'reflexion'].includes(c.id)));
+      const texto = (t) => { const p = el('div', '', t); p.style.cssText = 'font-size:0.83rem; color:#cbd5e1; line-height:1.45; white-space:pre-line;'; return p; };
+      if (!data) {
+        const c = el('div', 'card'); c.appendChild(el('div', 'card-title', 'Lectura y reflexión del día'));
+        const m = el('p', '', 'No se pudieron cargar. Se necesita conexión y abrir la app desde su dirección publicada en Netlify (no desde el archivo local).');
+        m.style.cssText = 'font-size:0.8rem; color:var(--sub); margin:8px 0;'; c.appendChild(m);
+        c.appendChild(enlacesLectura()); const b = el('button', 'btn-main', '🔄 Reintentar'); b.onclick = cargarReligioso; c.appendChild(b); root.appendChild(c); return;
+      }
+      const lect = el('div', 'card'); lect.style.borderTop = '3px solid var(--accent)';
+      const h = el('div', 'card-head'); h.appendChild(el('span', 'card-title', '📖 Lectura del día')); h.appendChild(el('span', 'badge', 'Texto')); lect.appendChild(h);
+      if (data.santo) { const sa = el('div', '', data.santo); sa.style.cssText = 'font-size:0.76rem; color:var(--gold); margin-bottom:8px;'; lect.appendChild(sa); }
+      data.lecturas.forEach(l => {
+        const t = el('div', '', l.titulo + (l.cita ? ' · ' + l.cita : '')); t.style.cssText = 'font-weight:700; font-size:0.84rem; color:var(--accent); margin:10px 0 4px;';
+        const q = texto(l.texto); q.style.cssText += 'border-left:3px solid var(--accent); padding-left:10px;';
+        lect.append(t, q);
+      });
+      const f = el('div', '', 'Fuente: evangelizo.org'); f.style.cssText = 'font-size:0.7rem; color:var(--sub); margin:10px 0;'; lect.appendChild(f); lect.appendChild(enlacesLectura());
+      const etA = el('div', '', 'Audio'); etA.style.cssText = 'font-size:0.72rem; color:var(--sub); margin-bottom:6px;'; lect.appendChild(etA);
+      lect.appendChild(crearControles('lectura', () => data.lecturas.flatMap(l => [l.titulo + (l.cita ? ', ' + l.cita : '') + '.', ...l.texto.split(/\n+/)]), { rateFn: velRel }));
+      const ev = data.lecturas.find(l => l.titulo === 'Evangelio');
+      if (ev) {
+        const e2 = el('div', '', 'Solo el Evangelio'); e2.style.cssText = 'font-size:0.72rem; color:var(--sub); margin:10px 0 6px;'; lect.appendChild(e2);
+        lect.appendChild(crearControles('evangelio', () => ev.texto.split(/\n+/), { rateFn: velRel }));
+      }
+      root.appendChild(lect);
+
+      const ref = el('div', 'card'); ref.style.borderTop = '3px solid var(--gold)';
+      const h2 = el('div', 'card-head'); h2.appendChild(el('span', 'card-title', '🕊️ Reflexión del día')); h2.appendChild(el('span', 'badge', 'Generada por IA')); ref.appendChild(h2);
+      if (data.reflexion) {
+        const av = el('div', '', 'Reflexión generada por IA a partir del Evangelio de hoy. No es magisterio ni homilía.'); av.style.cssText = 'font-size:0.72rem; color:var(--sub); margin-bottom:8px;';
+        ref.append(av, texto(data.reflexion));
+        const etR = el('div', '', 'Audio'); etR.style.cssText = 'font-size:0.72rem; color:var(--sub); margin:10px 0 6px;'; ref.appendChild(etR);
+        ref.appendChild(crearControles('reflexion', () => data.reflexion.split(/\n+/), { rateFn: velRel }));
+      } else ref.appendChild(texto('La reflexión de hoy no está disponible en este momento.'));
+      root.appendChild(ref);
+    }
+
+
+    // NOTICIAS DINÁMICAS (función Netlify)
+    const NEWS_API = '/.netlify/functions/noticias';
+    const NEWS_GROUPS = [['titulares','1. Titulares con semáforo de riesgo'],['economia','2. Economía y dólar'],['justicia','3. Régimen penitenciario y justicia'],['deportes','4. Deporte: The Strongest']];
+    const SEM = { rojo: ['pill-red','🔴 Conflicto alto','var(--red)'], amarillo: ['pill-yellow','🟡 Tensión media','var(--yellow)'], verde: ['pill-green','🟢 Sin riesgo','var(--success)'] };
+    let lastNews = null;
+
+    function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+
+    function renderNoticias(data, desdeCache) {
+      lastNews = data;
+      const root = document.getElementById('news-root'); root.innerHTML = '';
+      NEWS_GROUPS.forEach(([key, title]) => {
+        const list = (data.grupos && data.grupos[key]) || [];
+        if (!list.length) return;
+        const h = el('h3', '', title); h.style.cssText = 'font-size:0.88rem; color:var(--accent); margin:14px 0 8px;'; root.appendChild(h);
+        list.forEach(n => {
+          const sem = SEM[n.semaforo] || SEM.verde;
+          const card = el('div', 'card'); card.style.borderLeft = '4px solid ' + sem[2];
+          const head = el('div', 'card-head');
+          const t = el('span', '', n.titulo); t.style.cssText = 'font-weight:700; font-size:0.86rem;';
+          head.appendChild(t); head.appendChild(el('span', 'traffic-pill ' + sem[0], sem[1])); card.appendChild(head);
+          if (n.resumen) { const p = el('p', '', n.resumen); p.style.cssText = 'font-size:0.8rem; color:#cbd5e1; line-height:1.4;'; card.appendChild(p); }
+          const box = el('div', 'actor-box'); box.style.borderLeftColor = sem[2];
+          if (n.actores && n.actores.length) { box.appendChild(el('strong', '', 'Actores: ')); box.appendChild(document.createTextNode(n.actores.join(', '))); box.appendChild(document.createElement('br')); }
+          box.appendChild(el('strong', '', 'Fuente: '));
+          if (/^https?:\/\//.test(n.link || '')) { const a = el('a', '', n.fuente || 'Leer nota'); a.href = n.link; a.target = '_blank'; a.rel = 'noopener'; a.style.color = 'var(--accent)'; box.appendChild(a); }
+          else box.appendChild(document.createTextNode(n.fuente || '—'));
+          card.appendChild(box); root.appendChild(card);
+        });
+      });
+      const f = new Date(data.actualizado);
+      const hora = `${f.getDate()}/${f.getMonth()+1} ${String(f.getHours()).padStart(2,'0')}:${String(f.getMinutes()).padStart(2,'0')}`;
+      document.getElementById('news-status').innerText = (desdeCache ? 'Sin conexión, copia del ' : 'Actualizado ') + hora + ' · ' + (data.modo === 'ia' ? 'resumen con IA' : 'clasificación por palabras clave');
+    }
+
+    async function cargarNoticias(manual) {
+      const status = document.getElementById('news-status');
+      const cache = localStorage.getItem('news_cache');
+      if (cache && !lastNews) { try { renderNoticias(JSON.parse(cache), false); } catch (e) {} }
+      if (manual) status.innerText = 'Actualizando...';
+      try {
+        const r = await fetch(NEWS_API, { cache: 'no-store' });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        localStorage.setItem('news_cache', JSON.stringify(data));
+        renderNoticias(data, false);
+      } catch (e) {
+        if (cache) { try { renderNoticias(JSON.parse(cache), true); return; } catch (x) {} }
+        status.innerText = 'No se pudieron cargar las noticias. Revisa la conexión o la función en Netlify.';
+      }
+    }
+
+    function speakList(textos, rate) {
+      Voz.owner = 'noticias';
+      Voz.leer(textos, rate, { onFin: refrescarControles });
+    }
+
+    function readAllNews() {
+      if (!lastNews) return;
+      const textos = ['Noticiero estratégico.'];
+      NEWS_GROUPS.forEach(([key, title]) => {
+        const list = (lastNews.grupos && lastNews.grupos[key]) || [];
+        if (!list.length) return;
+        textos.push(title.replace(/^\d+\.\s*/, '') + '.');
+        list.forEach(n => textos.push(n.titulo + '. ' + (n.resumen || '') + (n.fuente ? ' Fuente: ' + n.fuente + '.' : '')));
+      });
+      speakList(textos, document.getElementById('newsSpeed').value);
+    }
+
+    // TAI CHI: datos y render
+    const TAICHI = [
+      { bloque: 'Calentamiento y preparación', min: 10, pasos: [
+        { n: 'Alineación corporal (postura Wuji)', min: 3, t: 'Pies al ancho de los hombros, rodillas ligeramente flexionadas, columna recta, hombros relajados y brazos colgando a los costados. Enraíza el cuerpo y vacía la mente.' },
+        { n: 'Movilización articular', min: 4, t: 'Rotaciones suaves y continuas: cuello, hombros, muñecas, cintura, cadera y rodillas.' },
+        { n: 'Qi Gong: Bajar el Cielo', min: 3, t: 'Eleva los brazos en círculo al inhalar y bájalos frente al torso al exhalar, uniendo cuerpo y respiración.' } ] },
+      { bloque: 'Práctica principal', min: 35, pasos: [
+        { n: 'Fundamentos (Ji Ben Gong)', min: 10, t: 'Desplazamientos lentos atendiendo al cambio de peso y al equilibrio (Taiji Bu): apoya el talón y luego la planta, con la pelvis baja.' },
+        { n: 'Forma Yang', min: 20, t: 'Forma abreviada de 10 o 24 pasos, fluida y encadenada: "Acariciar la melena del caballo salvaje", "La grulla blanca extiende sus alas".' },
+        { n: 'Aplicación marcial (simulación individual)', min: 5, t: 'Tuishou simulado: contacto circular constante, desviar, absorber y redirigir la fuerza sin tensión.' } ] },
+      { bloque: 'Enfriamiento y cierre', min: 5, pasos: [
+        { n: 'Estiramiento suave', min: 2, t: 'Sin rebotes: zona lumbar, cuádriceps, isquiotibiales y pantorrillas.' },
+        { n: 'Automasaje (Pai Da)', min: 1, t: 'Palmadas rítmicas y suaves con la palma ahuecada: brazos, pecho, espalda y piernas.' },
+        { n: 'Meditación de cierre (Dantian)', min: 2, t: 'Palmas superpuestas sobre el Dantian inferior (tres dedos bajo el ombligo), ojos cerrados, respiración abdominal natural.' } ] }
+    ];
+
+    // TAI CHI: sesión con contador, figuras esquemáticas y fotos propias
+    const POSES = [
+      { l: ['1. DE PIE', '2. ENRAÍZA'], a: { a: [8, 8], w: 12, k: .1 }, b: { a: [8, 8], w: 12, k: .25 } },
+      { l: ['1. HOMBROS', '2. CINTURA'], a: { a: [90, 90], w: 14, k: .1 }, b: { a: [90, 90], w: 14, k: .1, l: 14 } },
+      { l: ['1. ARRIBA (inhala)', '2. ABAJO (exhala)'], a: { a: [165, 165], w: 12, k: .1 }, b: { a: [25, 25], b: [50, 50], w: 12, k: .35 } },
+      { l: ['1. PESO ATRÁS', '2. PESO ADELANTE'], a: { a: [20, 20], w: 20, k: .5 }, b: { a: [20, 20], w: 28, k: .65, l: 6 } },
+      { l: ['1. MELENA DE CABALLO', '2. GRULLA BLANCA'], a: { a: [35, 95], b: [30, -20], w: 20, k: .55 }, b: { a: [150, 30], w: 7, k: .3 } },
+      { l: ['1. CONTACTO', '2. REDIRIGE'], a: { a: [60, 60], b: [50, 50], w: 20, k: .45 }, b: { a: [60, 60], b: [50, 50], w: 20, k: .45, l: 12 } },
+      { l: ['1. LUMBAR', '2. ALARGA'], a: { a: [10, 10], w: 14, k: .05, l: 38 }, b: { a: [170, 170], w: 14, k: .05 } },
+      { l: ['1. PECHO', '2. ESPALDA'], a: { a: [25, 25], b: [110, 110], w: 12, k: .15 }, b: { a: [10, 10], w: 12, k: .15, l: 25 } },
+      { l: ['1. MANOS EN DANTIAN', '2. RESPIRA'], a: { a: [30, 30], b: [-40, -40], w: 12, k: .15 }, b: { a: [30, 30], b: [-40, -40], w: 12, k: .3 } }
+    ];
+    function figura(p) {
+      const R = Math.PI / 180, S = Math.sin, C = Math.cos, k = p.k || 0, ln = (p.l || 0) * R, bd = p.b || [0, 0];
+      const hip = [50, 76 + k * 10], sh = [hip[0] + S(ln) * 32, hip[1] - C(ln) * 32], hd = [sh[0] + S(ln) * 13, sh[1] - C(ln) * 13];
+      const brazo = (ang, dob, lado) => {
+        const a = ang * R * lado, e = [sh[0] + S(a) * 19, sh[1] + C(a) * 19], a2 = (ang + dob) * R * lado;
+        return `M${sh[0]},${sh[1]} L${e[0]},${e[1]} L${e[0] + S(a2) * 17},${e[1] + C(a2) * 17}`;
+      };
+      const pierna = lado => { const fx = 50 + lado * (p.w || 12); return `M${hip[0]},${hip[1]} L${(hip[0] + fx) / 2 + lado * k * 10},${(hip[1] + 134) / 2} L${fx},134`; };
+      const d = [`M${hip[0]},${hip[1]} L${sh[0]},${sh[1]}`, brazo(p.a[0], bd[0], -1), brazo(p.a[1], bd[1], 1), pierna(-1), pierna(1)].join(' ');
+      return `<svg viewBox="0 0 100 140" height="130"><line x1="22" y1="134" x2="78" y2="134" stroke="#334155" stroke-width="2"/><path d="${d}" fill="none" stroke="#2dd4bf" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${hd[0]}" cy="${hd[1]}" r="9" fill="none" stroke="#2dd4bf" stroke-width="4"/></svg>`;
+    }
+    const leerFoto = id => { try { return localStorage.getItem('tc_foto_' + id); } catch (e) { return null; } };
+    function guardarFoto(id, file) {
+      const r = new FileReader();
+      r.onload = () => {
+        const im = new Image();
+        im.onload = () => {
+          const k = Math.min(1, 480 / Math.max(im.width, im.height)), c = document.createElement('canvas');
+          c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+          c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+          try { localStorage.setItem('tc_foto_' + id, c.toDataURL('image/jpeg', 0.7)); } catch (e) { alert('No hay espacio para guardar la foto.'); }
+          renderPasos();
+        };
+        im.src = r.result;
+      };
+      r.readAsDataURL(file);
+    }
+    function cajaFase(id, etiqueta, pose) {
+      const w = el('div', 'phase-wrap'); w.appendChild(el('div', 'phase-label', etiqueta));
+      const f = leerFoto(id);
+      if (f) { const im = document.createElement('img'); im.src = f; im.alt = etiqueta; w.appendChild(im); }
+      else { const d = el('div'); d.style.cssText = 'width:100%; height:135px; display:flex; align-items:center; justify-content:center; background:#0b1220;'; d.innerHTML = figura(pose); w.appendChild(d); }
+      const bar = el('div', 'tc-foto'), lab = el('label', '', '📷 Usar mi foto'), inp = document.createElement('input');
+      inp.type = 'file'; inp.accept = 'image/*'; inp.style.display = 'none'; inp.onchange = () => { if (inp.files[0]) guardarFoto(id, inp.files[0]); };
+      lab.appendChild(inp); bar.appendChild(lab);
+      if (f) { const q = el('button', '', '↺ Esquema'); q.onclick = () => { try { localStorage.removeItem('tc_foto_' + id); } catch (e) {} renderPasos(); }; bar.appendChild(q); }
+      w.appendChild(bar); return w;
+    }
+
+    let tcFlat = [], tcI = 0, tcLeft = 0, tcActivo = false, tcTimer = null; const tcUI = {};
+    const tcRestante = () => { let t = tcLeft; for (let j = tcI + 1; j < tcFlat.length; j++) t += tcFlat[j].min * 60; return t; };
+    function tcMarcar() {
+      const en = tcActivo || tcLeft > 0;
+      document.querySelectorAll('.tc-paso').forEach(e => e.classList.toggle('tc-activo', en && Number(e.dataset.i) === tcI));
+    }
+    function tcMostrar() {
+      const p = tcFlat[tcI];
+      tcUI.fase.innerText = p.bloque.toUpperCase() + ' · PASO ' + (tcI + 1) + '/' + tcFlat.length;
+      tcUI.inst.innerText = p.n + ': ' + p.t;
+      tcMarcar();
+    }
+    function tcEstado() {
+      tcUI.btn.innerText = tcActivo ? '⏸ PAUSAR' : (tcLeft > 0 ? '▶ REANUDAR' : '▶ INICIAR SESIÓN');
+      const en = tcActivo || tcLeft > 0;
+      tcUI.sig.disabled = tcUI.det.disabled = !en; tcUI.sig.style.opacity = tcUI.det.style.opacity = en ? '1' : '0.4';
+    }
+    function tcRun(seg) {
+      if (tcTimer) tcTimer.stop();
+      tcTimer = countdown(seg, left => {
+        tcLeft = left; tcUI.time.innerText = fmt(left); tcUI.total.innerText = 'Quedan ' + fmt(tcRestante()) + ' de sesión';
+      }, () => {
+        if ('vibrate' in navigator) navigator.vibrate([300, 150, 300]);
+        playBeep(); tcI++;
+        if (tcI >= tcFlat.length) { tcFin(); return; }
+        tcMostrar(); tcRun(tcFlat[tcI].min * 60);
+      });
+    }
+    function tcToggle() {
+      if (tcActivo) { tcTimer.stop(); tcActivo = false; tcEstado(); return; }
+      tcActivo = true; requestWakeLock();
+      if (tcLeft <= 0) { tcI = 0; tcLeft = tcFlat[0].min * 60; }
+      tcMostrar(); tcEstado(); tcRun(tcLeft);
+    }
+    function tcSaltar() {
+      if (!(tcActivo || tcLeft > 0)) return;
+      tcI++;
+      if (tcI >= tcFlat.length) { tcFin(); return; }
+      tcLeft = tcFlat[tcI].min * 60; tcMostrar();
+      if (tcActivo) tcRun(tcLeft); else { tcUI.time.innerText = fmt(tcLeft); tcUI.total.innerText = 'Quedan ' + fmt(tcRestante()) + ' de sesión'; }
+    }
+    function tcDetener() {
+      if (tcTimer) tcTimer.stop();
+      tcActivo = false; tcI = 0; tcLeft = 0; releaseWakeLock();
+      tcUI.fase.innerText = 'LISTO PARA EMPEZAR'; tcUI.time.innerText = fmt(tcFlat[0].min * 60);
+      tcUI.inst.innerText = 'Presiona INICIAR cuando estés de pie y en calma.';
+      tcUI.total.innerText = 'Sesión completa: ' + TAICHI.reduce((a, b) => a + b.min, 0) + ' min';
+      tcMarcar(); tcEstado();
+    }
+    function tcFin() { tcDetener(); tcUI.fase.innerText = '¡SESIÓN COMPLETADA!'; tcUI.inst.innerText = 'Termina en quietud, con la respiración natural.'; }
+
+    function renderPasos() {
+      const box = document.getElementById('tc-pasos'); box.innerHTML = ''; let n = 0;
+      TAICHI.forEach(b => {
+        const card = el('div', 'card'), head = el('div', 'card-head');
+        head.appendChild(el('span', 'card-title', b.bloque)); head.appendChild(el('span', 'badge', b.min + ' min')); card.appendChild(head);
+        b.pasos.forEach(st => {
+          const i = n++, ps = POSES[i], row = el('div', 'tc-paso'); row.dataset.i = i;
+          row.appendChild(el('strong', '', st.n + ' · ' + st.min + ' min'));
+          const t = el('div', '', st.t); t.style.cssText = 'font-size:0.78rem; color:#cbd5e1; margin-top:2px;'; row.appendChild(t);
+          const dual = el('div', 'dual-movement-box');
+          dual.appendChild(cajaFase(i + 'a', ps.l[0], ps.a)); dual.appendChild(cajaFase(i + 'b', ps.l[1], ps.b));
+          row.appendChild(dual); card.appendChild(row);
+        });
+        box.appendChild(card);
+      });
+      tcMarcar();
+    }
+    function renderTaiChi() {
+      tcFlat = TAICHI.flatMap(b => b.pasos.map(st => ({ ...st, bloque: b.bloque })));
+      const root = document.getElementById('taichi-root'); root.innerHTML = '';
+      const total = TAICHI.reduce((a, b) => a + b.min, 0);
+      const top = el('div', 'card'); top.style.borderColor = 'var(--taichi)';
+      const h = el('div', 'card-head'), tt = el('span', 'card-title', '🧘 Tai Chi · martes, jueves y sábado');
+      tt.style.color = 'var(--taichi)'; h.appendChild(tt); h.appendChild(el('span', 'badge', total + ' min')); top.appendChild(h);
+      const scr = el('div', 'coach-screen'); scr.style.borderColor = 'var(--taichi)';
+      tcUI.fase = el('div', 'coach-phase'); tcUI.fase.style.color = 'var(--taichi)';
+      tcUI.time = el('div', 'coach-time'); tcUI.inst = el('div', 'coach-inst'); tcUI.inst.style.cssText += 'font-size:0.8rem; min-height:56px;';
+      tcUI.total = el('div'); tcUI.total.style.cssText = 'font-size:0.72rem; color:var(--sub);';
+      scr.append(tcUI.fase, tcUI.time, tcUI.inst, tcUI.total); top.appendChild(scr);
+      const fila = el('div'); fila.style.cssText = 'display:flex; gap:8px; margin-top:10px;';
+      tcUI.btn = el('button', 'btn-main'); tcUI.btn.style.cssText = 'flex:1; background:var(--taichi);'; tcUI.btn.onclick = tcToggle;
+      tcUI.sig = el('button', 'btn-secondary', '⏭ Saltar paso'); tcUI.sig.onclick = tcSaltar;
+      tcUI.det = el('button', 'btn-secondary', '⏹ Detener'); tcUI.det.onclick = tcDetener;
+      fila.append(tcUI.btn, tcUI.sig, tcUI.det); top.appendChild(fila);
+      const nota = el('p', '', 'Sin música. Al cambiar de paso suena un aviso y vibra. Las figuras son esquemas orientativos: puedes poner tu propia foto en cada postura.');
+      nota.style.cssText = 'font-size:0.72rem; color:var(--sub); margin-top:8px;'; top.appendChild(nota);
+      root.appendChild(top);
+      const pasos = el('div'); pasos.id = 'tc-pasos'; root.appendChild(pasos);
+      renderPasos(); tcDetener();
+    }
+
+    // Inicializaciones
+    setupWeekRoutine();
+    calcTradingRisk();
+    calcP2PMargin();
+    renderTaiChi();
+    aplicarCalendario();
+    montarControlesFijos();
+    cargarBibliaGuardada();
+    cargarReligioso();
+    cargarNoticias();
+  </script>
+</body>
+</html>
