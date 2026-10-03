@@ -1,5 +1,6 @@
 // Netlify Function: lecturas del día (feed de evangelizo.org) + reflexión generada con IA.
-// Variables: ANTHROPIC_API_KEY (opcional; sin ella no hay reflexión), ANTHROPIC_MODEL (opcional).
+// Variables: GEMINI_API_KEY (Google AI Studio); sin ella no hay reflexión.
+const { generar, hayIA } = require('../lib/ia');
 const FEED = 'https://feed.evangelizo.org/v2/reader.php';
 const PIEZAS = [['FR', 'Primera lectura'], ['PS', 'Salmo'], ['SR', 'Segunda lectura'], ['GSP', 'Evangelio']];
 
@@ -16,21 +17,12 @@ async function pedir(fecha, type, content) {
 }
 
 async function reflexion(evangelio, ms) {
-  const key = process.env.ANTHROPIC_API_KEY; if (!key || !evangelio) return '';
-  try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST', signal: AbortSignal.timeout(ms),
-      headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5', max_tokens: 600,
-        system: 'Escribe una reflexión breve (150 a 200 palabras), en español, para un laico católico, basada ÚNICAMENTE en el pasaje del Evangelio que recibes. ' +
-          'No cites santos, papas ni documentos, no atribuyas frases a nadie y no inventes hechos. Termina con una pregunta de examen personal. Texto plano, sin títulos ni listas.',
-        messages: [{ role: 'user', content: evangelio }]
-      })
-    });
-    const d = await r.json();
-    return (d.content || []).map(b => b.text || '').join('').trim();
-  } catch (e) { return ''; }
+  if (!hayIA() || !evangelio) return '';
+  return generar({
+    system: 'Escribe una reflexión breve (150 a 200 palabras), en español, para un laico católico, basada ÚNICAMENTE en el pasaje del Evangelio que recibes. ' +
+      'No cites santos, papas ni documentos, no atribuyas frases a nadie y no inventes hechos. Termina con una pregunta de examen personal. Texto plano, sin títulos ni listas.',
+    user: evangelio, maxTokens: 600, ms
+  });
 }
 
 exports.handler = async (event) => {

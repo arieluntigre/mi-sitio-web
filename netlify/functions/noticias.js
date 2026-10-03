@@ -1,7 +1,8 @@
 // Netlify Function: junta titulares (Google News RSS), los clasifica y devuelve JSON.
 // Variables de entorno (Netlify > Site configuration > Environment variables):
-//   ANTHROPIC_API_KEY  (opcional; sin ella usa clasificación por palabras clave)
-//   ANTHROPIC_MODEL    (opcional; por defecto claude-sonnet-5-5)
+//   GEMINI_API_KEY (Google AI Studio); sin ella, clasifica por palabras clave
+
+const { generar, hayIA } = require('../lib/ia');
 
 const MEDIOS = {
   'Los Tiempos': 'lostiempos.com', 'El Deber': 'eldeber.com.bo', 'La Razón': 'la-razon.com',
@@ -41,21 +42,15 @@ async function getJson(url, opts, ms) {
 }
 
 async function clasificarConIA(entrada, ms) {
-  const key = process.env.ANTHROPIC_API_KEY; if (!key) return null;
+  if (!hayIA()) return null;
   const system = 'Eres analista de coyuntura de Bolivia. Recibes titulares agrupados en un JSON. ' +
     'Devuelve SOLO JSON con la forma {"items":[{"id":"...","resumen":"...","semaforo":"rojo|amarillo|verde","actores":["..."]}]}. ' +
     'Reglas: máximo titulares 6, economia 4, justicia 3, deportes 3; descarta duplicados o irrelevantes. ' +
     'Basa el resumen (una o dos frases, neutral, en español) SOLO en el titular y la fuente; no inventes cifras, nombres ni hechos. ' +
     'Semáforo: rojo = conflicto alto, riesgo institucional o de seguridad; amarillo = tensión media; verde = sin riesgo. ' +
     'Actores: instituciones o personas que aparecen en el titular (puede ser []).';
-  const r = await getJson('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5', max_tokens: 2500, system,
-      messages: [{ role: 'user', content: JSON.stringify(entrada) }] })
-  }, ms);
-  const d = await r.json();
-  const txt = (d.content || []).map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+  const txt = (await generar({ system, user: JSON.stringify(entrada), maxTokens: 2500, ms, json: true })).replace(/```json|```/g, '').trim();
+  if (!txt) return null;
   const map = {}; for (const i of JSON.parse(txt).items || []) map[i.id] = i;
   return map;
 }
